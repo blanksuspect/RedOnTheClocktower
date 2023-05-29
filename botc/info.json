@@ -1,0 +1,14 @@
+{
+    "author" : ["Burnacid"],
+    "install_msg" : "Blood on the Clocktower cog is installed\nStart your games by using `[p]botc setup` to create your channels and roles. After that you need the `slash` cog loaded and you need to `[p]slash enablecog botc`",
+    "name" : "BotC",
+    "short" : "Blood on the Clocktower",
+    "description" : "The ideal cog for playing Blood on the Clocktower",
+    "required_cogs": {},
+    "requirements": ["logging","json","datetime","asyncio"],
+    "min_bot_version": "3.5.0",
+    "max_bot_version": "0.0.0",
+    "tags": ["move","botc","role","storyteller","blood on the clocktower"],
+    "type": "COG"
+}
+

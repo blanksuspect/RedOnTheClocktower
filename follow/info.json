@@ -1,0 +1,14 @@
+{
+    "author" : ["Burnacid"],
+    "install_msg" : "Follow cog is installed.\nYou need the `slash` cog loaded and you need to `[p]slash enablecog follow`",
+    "name" : "Follow",
+    "short" : "Follow",
+    "description" : "This cog lets a member follow another member through voice channels. Ideal for playing games like Blood on the Clocktower",
+    "required_cogs": {},
+    "requirements": ["logging"],
+    "min_bot_version": "3.5.0",
+    "max_bot_version": "0.0.0",
+    "tags": ["move","botc","follow","storyteller","blood on the clocktower"],
+    "type": "COG"
+}
+
