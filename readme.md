@@ -1,7 +1,5 @@
 # Installation
 
-**Attention:** The cog names in this repo are all TitleCase. This goes against [Red conventions](https://red-discordbot.readthedocs.io/en/stable/guide_cog_creation.html) but I prefer it.
-
 Here are the [Red](https://github.com/Cog-Creators/Red-DiscordBot) commands to add this repository (use your bot's prefix in place of `[p]`):
 ```
 [p]repo add BotC-Red-Cogs https://github.com/burnacid/Botc-Red-Cogs
