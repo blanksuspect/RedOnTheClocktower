@@ -52,7 +52,6 @@ class FollowCog(commands.Cog):
                 # Remove old follows if exists
                 for k in follow_list:
                     if interaction.user.id in follow_list[k]:
-                        log.debug("Remove old follow")
                         follow_list[k].remove(interaction.user.id)
 
 
@@ -68,6 +67,69 @@ class FollowCog(commands.Cog):
         except Exception as e:
             log.error(e)
         
+    @app_commands.command()
+    @app_commands.guild_only()
+    @app_commands.describe(member="The member you want to remove from following you")
+    async def removefollow(self, interaction: discord.Interaction, member: discord.Member = None):
+        """Remove someone or everyone from following you"""
+
+        # Check if this member is being followed
+        async with self.config.guild(interaction.guild).follows() as follow_list:
+            followers = follow_list.get(str(interaction.user.id), None)
+
+            if followers is None:
+                await interaction.response.send_message(f"You are not being followed!", ephemeral=True)
+                return
+        
+            if member is None:
+                listUnfollows = []
+                for m in follow_list[str(interaction.user.id)]:
+                    guildMember = interaction.guild.get_member(m)
+
+                    if guildMember is not None:
+                        listUnfollows.append(guildMember.mention)
+
+                    follow_list[str(interaction.user.id)].remove(m)
+                
+                if len(listUnfollows) > 0:
+                    unfollowString = ", ".join(listUnfollows)
+                    await interaction.response.send_message(f"{interaction.user.mention} has removed {unfollowString} from following them", ephemeral=False)
+                else:
+                    await interaction.response.send_message(f"You are no longer being followed by anyone", ephemeral=True)
+            else:
+                if member.id not in followers:
+                    await interaction.response.send_message(f"{member.mention} is not following you!", ephemeral=True)
+                    return
+                
+                follow_list[str(interaction.user.id)].remove(member.id)
+                await interaction.response.send_message(f"{interaction.user.mention} has removed {member.mention} from following them", ephemeral=False)
+
+    @app_commands.command()
+    @app_commands.guild_only()
+    async def unfollow(self, interaction: discord.Interaction):
+        """Stop following if you are following someone"""
+
+        try:
+            # Check if this member is being followed
+            async with self.config.guild(interaction.guild).follows() as follow_list:
+                for k in follow_list:
+                    if interaction.user.id in follow_list[k]:
+                        member_following = interaction.guild.get_member(k)
+                        log.debug(k)
+
+                        if member_following is None:
+                            await interaction.response.send_message(f"You are no longer following a ghost", ephemeral=True)
+                            return
+
+                        follow_list[k].remove(interaction.user.id)
+                        await interaction.response.send_message(f"{interaction.user.mention} is no longer following {member_following.mention}", ephemeral=False)
+                        return
+        
+            await interaction.response.send_message(f"You are not following anyone", ephemeral=True)
+
+        except Exception as e:
+            log.error(e)
+
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):

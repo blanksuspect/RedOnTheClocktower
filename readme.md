@@ -56,3 +56,5 @@ After that your permissions do not matter. You will follow along even if you can
 | Command            | Description |
 | ------------------ | ----------- |
 | `/follow <member>`        | Follows a member arround |
+| `/unfollow`        | Stop following whoever you are following |
+| `/removefollow [member]`        | Remove a member or all members from following you |
