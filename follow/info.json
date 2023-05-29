@@ -5,7 +5,7 @@
     "short" : "Follow",
     "description" : "This cog lets a member follow another member through voice channels. Ideal for playing games like Blood on the Clocktower",
     "required_cogs": {},
-    "requirements": ["logging"],
+    "requirements": [],
     "min_bot_version": "3.5.0",
     "max_bot_version": "0.0.0",
     "tags": ["move","botc","follow","storyteller","blood on the clocktower"],
