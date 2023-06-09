@@ -1,9 +1,6 @@
 {
     "author" : ["Burnacid"],
     "install_msg" : "Welcome to the Blood on the Clocktower community and using my Cogs. Hope they help you with your games!\n Use [p]load botc to load the cogs",
-    "name" : "BotC-Red-Cogs",
     "short" : "Blood on the Clocktower Red Cogs",
-    "description" : "Playing Blood on the Clocktower via Discord. Then these Cogs are a must",
-    "min_python_version": [3, 7, 2],
-	"tags": ["move","botc","follow","role","storyteller","blood on the clocktower"],
+    "description" : "Playing Blood on the Clocktower via Discord. Then these Cogs are a must"
 }
