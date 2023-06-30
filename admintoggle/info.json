@@ -1,0 +1,11 @@
+{
+    "author" : ["Burnacid"],
+    "install_msg" : "Blood on the Clocktower cog is installed\nStart your games by using `[p]botc setup` to create your channels and roles. After that you need the `slash` cog loaded and you need to `[p]slash enablecog botc`",
+    "short" : "Toggle on or off admin permissions",
+    "description" : "Do you need to hide channels from admins for game purposes? This cog allows an admin to toggle off his admin permissions and toggle it back on.",
+    "requirements": [],
+    "min_bot_version": "3.5.0",
+    "tags": ["admin","toggle","blood on the clocktower","botc"],
+    "type": "COG"
+}
+
