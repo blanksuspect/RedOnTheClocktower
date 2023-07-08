@@ -108,6 +108,21 @@ class BotCCog(commands.Cog):
             log.info(v)
             await nightCategoryChannel.create_voice_channel(v)        
 
+    async def move_townsquare(self, ctx: commands.Context, dayCategoryChannel: discord.CategoryChannel):
+        dayChannels = dayCategoryChannel.voice_channels
+        townSquareChannels = dayChannels[0]
+        del dayChannels[0]
+
+        for v in dayChannels:
+            for m in v.members:
+                #Skip players with a ! in front of their name
+                if m.display_name.startswith("!"):
+                    continue
+                
+                await m.move_to(townSquareChannels)
+        
+        await ctx.send(f"Welcome back!")
+
     @commands.group(name="botc")
     @commands.guild_only()
     @commands.admin()
@@ -138,34 +153,68 @@ class BotCCog(commands.Cog):
 
         pass
 
-    @app_commands.command()
+    @botc.group(name="config")
+    @commands.guild_only()
+    @commands.admin()
+    async def config(self, ctx: commands.Context):
+        """Manual configure stuff for BotC"""
+        pass
+
+    @config.command(name="storyteller")
+    @commands.guild_only()
+    @commands.admin()
+    async def botc_config_storyteller(self, ctx: commands.Context, role: discord.Role):
+        """Mark a role for the storyteller"""
+        
+        await self.config.guild(ctx.guild).storyteller.set(role.id)
+        await ctx.send(f"{role.mention} is set as storyteller role", delete_after=60)
+
+    @config.command(name="daychannels")
+    @commands.guild_only()
+    @commands.admin()
+    async def botc_config_daychannels(self, ctx: commands.Context, channel: discord.CategoryChannel):
+        """Mark category as day channels"""
+        
+        await self.config.guild(ctx.guild).daycategory.set(channel.id)
+        await ctx.send(f"{channel.mention} is set as day channel category", delete_after=60)
+
+    @config.command(name="nightchannels")
+    @commands.guild_only()
+    @commands.admin()
+    async def botc_config_daychannels(self, ctx: commands.Context, channel: discord.CategoryChannel):
+        """Mark category as day channels"""
+        
+        await self.config.guild(ctx.guild).nightcategory.set(channel.id)
+        await ctx.send(f"{channel.mention} is set as night channel category", delete_after=60)
+
+    @commands.hybrid_command()
     @app_commands.guild_only()
-    async def night(self, interaction: discord.Interaction):
+    async def night(self, ctx: commands.Context):
         """Enter into the Night Phase for Blood on the Clocktower and move all players to a night cottage"""
 
-        storyteller = await self.config.guild(interaction.guild).storyteller()
-        storytellerRole = interaction.user.get_role(storyteller)
+        storyteller = await self.config.guild(ctx.guild).storyteller()
+        storytellerRole = ctx.author.get_role(storyteller)
 
         if storytellerRole is None:
-            await interaction.response.send_message(f"You are not a storyteller!", ephemeral=True)
+            await ctx.send(f"You are not a storyteller!", ephemeral=True)
             return
 
-        dayCategory = await self.config.guild(interaction.guild).daycategory()
-        dayCategoryChannel = interaction.guild.get_channel(dayCategory)
+        dayCategory = await self.config.guild(ctx.guild).daycategory()
+        dayCategoryChannel = ctx.guild.get_channel(dayCategory)
         if dayCategoryChannel is None:
-            await interaction.response.send_message(f"I could not find the townsquere. Something must have been deleted/moved or destroyed!", ephemeral=True)
+            await ctx.send(f"I could not find the townsquere. Something must have been deleted/moved or destroyed!", ephemeral=True)
             return
         
-        nightCategory = await self.config.guild(interaction.guild).nightcategory()
-        nightCategoryChannel = interaction.guild.get_channel(nightCategory)
+        nightCategory = await self.config.guild(ctx.guild).nightcategory()
+        nightCategoryChannel = ctx.guild.get_channel(nightCategory)
         if nightCategoryChannel is None:
-            await interaction.response.send_message(f"I could not find the night cottages. Something must have been deleted/moved or destroyed!", ephemeral=True)
+            await ctx.send(f"I could not find the night cottages. Something must have been deleted/moved or destroyed!", ephemeral=True)
             return
         
         nightCottages = nightCategoryChannel.voice_channels
         cottageIndex = 0
 
-        await interaction.response.send_message(f"Moving players to their cottages. Please wait!", ephemeral=False)
+        await ctx.send(f"Moving players to their cottages. Please wait!", ephemeral=False)
 
         for v in dayCategoryChannel.voice_channels:
             for m in v.members:
@@ -181,33 +230,33 @@ class BotCCog(commands.Cog):
                 cottageIndex += 1
 
 
-    @app_commands.command()
+    @commands.hybrid_command()
     @app_commands.guild_only()
-    async def day(self, interaction: discord.Interaction):
+    async def day(self, ctx: commands.Context):
         """Enter into the Day Phase for Blood on the Clocktower and move all players to the Town Square"""
 
-        storyteller = await self.config.guild(interaction.guild).storyteller()
-        storytellerRole = interaction.user.get_role(storyteller)
+        storyteller = await self.config.guild(ctx.guild).storyteller()
+        storytellerRole = ctx.author.get_role(storyteller)
 
         if storytellerRole is None:
-            await interaction.response.send_message(f"You are not a storyteller!", ephemeral=True)
+            await ctx.send(f"You are not a storyteller!", ephemeral=True)
             return
 
-        dayCategory = await self.config.guild(interaction.guild).daycategory()
-        dayCategoryChannel = interaction.guild.get_channel(dayCategory)
+        dayCategory = await self.config.guild(ctx.guild).daycategory()
+        dayCategoryChannel = ctx.guild.get_channel(dayCategory)
         if dayCategoryChannel is None:
-            await interaction.response.send_message(f"I could not find the townsquere. Something must have been deleted/moved or destroyed!", ephemeral=True)
+            await ctx.send(f"I could not find the townsquere. Something must have been deleted/moved or destroyed!", ephemeral=True)
             return
         
-        nightCategory = await self.config.guild(interaction.guild).nightcategory()
-        nightCategoryChannel = interaction.guild.get_channel(nightCategory)
+        nightCategory = await self.config.guild(ctx.guild).nightcategory()
+        nightCategoryChannel = ctx.guild.get_channel(nightCategory)
         if nightCategoryChannel is None:
-            await interaction.response.send_message(f"I could not find the night cottages. Something must have been deleted/moved or destroyed!", ephemeral=True)
+            await ctx.send(f"I could not find the night cottages. Something must have been deleted/moved or destroyed!", ephemeral=True)
             return
         
         dayChannels = dayCategoryChannel.voice_channels
 
-        await interaction.response.send_message(f"Moving players to the Town Square. Please wait!", ephemeral=False)
+        await ctx.send(f"Moving players to the Town Square. Please wait!", ephemeral=False)
 
         for v in nightCategoryChannel.voice_channels:
             for m in v.members:
@@ -217,41 +266,67 @@ class BotCCog(commands.Cog):
                 
                 await m.move_to(dayChannels[0])
 
-    # TODO: Timer day move
-    @app_commands.command()
+    @commands.hybrid_command()
+    @app_commands.guild_only()
+    async def townsquare(self, ctx: commands.Context):
+        """Move everyone back to townsquare"""
+
+        storyteller = await self.config.guild(ctx.guild).storyteller()
+        storytellerRole = ctx.author.get_role(storyteller)
+
+        if storytellerRole is None:
+            await ctx.send(f"You are not a storyteller!", ephemeral=True)
+            return
+
+        dayCategory = await self.config.guild(ctx.guild).daycategory()
+        dayCategoryChannel = ctx.guild.get_channel(dayCategory)
+        if dayCategoryChannel is None:
+            await ctx.send(f"I could not find the townsquere. Something must have been deleted/moved or destroyed!", ephemeral=True)
+            return
+        
+        nightCategory = await self.config.guild(ctx.guild).nightcategory()
+        nightCategoryChannel = ctx.guild.get_channel(nightCategory)
+        if nightCategoryChannel is None:
+            await ctx.send(f"I could not find the night cottages. Something must have been deleted/moved or destroyed!", ephemeral=True)
+            return
+        
+        await ctx.send(f"Moving players to the Town Square. Please wait!", ephemeral=False)
+        await self.move_townsquare(ctx, dayCategoryChannel)
+
+    @commands.hybrid_command()
     @app_commands.guild_only()
     @app_commands.describe(minutes="Number of minutes for private chats", automatic="Automatic pull people back to town square when time is up?")
     @app_commands.choices(automatic=[
         app_commands.Choice(name='Yes', value=1),
         app_commands.Choice(name='No', value=0)
     ])
-    async def startday(self, interaction: discord.Interaction, minutes: int, automatic: app_commands.Choice[int] = 1):
+    async def startday(self, ctx: commands.Context, minutes: int, automatic: app_commands.Choice[int] = 1):
         """Start the day for private chats with x minutes. By default pulling everyone back to town square"""
 
         minutes = int(minutes)
 
-        storyteller = await self.config.guild(interaction.guild).storyteller()
-        storytellerRole = interaction.user.get_role(storyteller)
+        storyteller = await self.config.guild(ctx.guild).storyteller()
+        storytellerRole = ctx.author.get_role(storyteller)
 
         if storytellerRole is None:
-            await interaction.response.send_message(f"You are not a storyteller!", ephemeral=True)
+            await ctx.send(f"You are not a storyteller!", ephemeral=True)
             return
         
-        dayCategory = await self.config.guild(interaction.guild).daycategory()
-        dayCategoryChannel = interaction.guild.get_channel(dayCategory)
+        dayCategory = await self.config.guild(ctx.guild).daycategory()
+        dayCategoryChannel = ctx.guild.get_channel(dayCategory)
         if dayCategoryChannel is None:
-            await interaction.response.send_message(f"I could not find the townsquere. Something must have been deleted/moved or destroyed!", ephemeral=True)
+            await ctx.send(f"I could not find the townsquere. Something must have been deleted/moved or destroyed!", ephemeral=True)
             return
         
-        nightCategory = await self.config.guild(interaction.guild).nightcategory()
-        nightCategoryChannel = interaction.guild.get_channel(nightCategory)
+        nightCategory = await self.config.guild(ctx.guild).nightcategory()
+        nightCategoryChannel = ctx.guild.get_channel(nightCategory)
         if nightCategoryChannel is None:
-            await interaction.response.send_message(f"I could not find the night cottages. Something must have been deleted/moved or destroyed!", ephemeral=True)
+            await ctx.send(f"I could not find the night cottages. Something must have been deleted/moved or destroyed!", ephemeral=True)
             return
 
         if self.dayrunning:
             deadlineString = self.deadline.strftime('%d-%m-%Y %H:%M:%S')
-            await interaction.response.send_message(f"The day has already started and will end at {deadlineString}", ephemeral=True)
+            await ctx.send(f"The day has already started and will end at {deadlineString}", ephemeral=True)
             return
 
         now = datetime.now()
@@ -259,59 +334,44 @@ class BotCCog(commands.Cog):
         deadlineString = self.deadline.strftime('%d-%m-%Y %H:%M:%S')
         self.dayrunning = True
 
-        await interaction.response.send_message(f"The day has started. You have {minutes} minutes for private chats. (Until {deadlineString})", ephemeral=False)
+        await ctx.send(f"The day has started. You have {minutes} minutes for private chats. (Until {deadlineString})", ephemeral=False)
 
         await asyncio.sleep((minutes - 1) * 60)
 
-        await interaction.channel.send(f"The day will end in 1 minute!")
+        await ctx.send(f"The day will end in 1 minute!")
 
         await asyncio.sleep(50)
 
-        await interaction.channel.send(f"Back to town square please! (10 seconds)")
+        await ctx.send(f"Back to town square please! (10 seconds)")
 
         await asyncio.sleep(10)
 
         if automatic == 1:
-            dayChannels = dayCategoryChannel.voice_channels
-            townSquareChannels = dayChannels[0]
-            del dayChannels[0]
-
-            for v in dayChannels:
-                for m in v.members:
-                    #Skip players with a ! in front of their name
-                    if m.display_name.startswith("!"):
-                        continue
-                    
-                    await m.move_to(townSquareChannels)
-            
-            await interaction.channel.send(f"Welcome back!")
+            await self.move_townsquare(ctx, dayCategoryChannel)
         
         self.dayrunning = False
 
-    # TODO: Sound?
-
-    # TODO: Assign ST role
-    @app_commands.command()
+    @commands.hybrid_command()
     @app_commands.guild_only()
     @app_commands.describe(member="Who do you want to assign as storyteller?")
-    async def storyteller(self, interaction: discord.Interaction, member: discord.Member = None):
+    async def storyteller(self, ctx: commands.Context, member: discord.Member = None):
         """Assign/unassign yourself or someone else as storyteller"""
 
-        if interaction.user.voice is None:
-            await interaction.response.send_message(f"You need to be connected to a voice channel before you can become storyteller", ephemeral=True)
+        if ctx.author.voice is None:
+            await ctx.send(f"You need to be connected to a voice channel before you can become storyteller", ephemeral=True)
             return
 
-        gameState = await self.config.guild(interaction.guild).gameState()
+        gameState = await self.config.guild(ctx.guild).gameState()
         if gameState is None:
             gameState = 0
 
-        storyteller = await self.config.guild(interaction.guild).storyteller()
-        storytellerRole = interaction.user.get_role(storyteller)
+        storyteller = await self.config.guild(ctx.guild).storyteller()
+        storytellerRole = ctx.author.get_role(storyteller)
 
-        currentStorytellers = interaction.guild.get_role(storyteller)
+        currentStorytellers = ctx.guild.get_role(storyteller)
 
         if currentStorytellers is None:
-            await interaction.response.send_message(f"The storyteller role could not be found anymore!", ephemeral=True)
+            await ctx.send(f"The storyteller role could not be found anymore!", ephemeral=True)
 
         # Fetch the current storytellers online
         onlineStorytellers = []
@@ -325,50 +385,50 @@ class BotCCog(commands.Cog):
         if member is None:
             if storytellerRole is None:
                 if gameState == 1 and storytellerRole is None and len(onlineStorytellers) > 0:
-                    await interaction.response.send_message(f"You can't assign yourself as storyteller while the game is running by other storytellers than you. Current storytellers: {onlineStorytellersString}", ephemeral=True)
+                    await ctx.send(f"You can't assign yourself as storyteller while the game is running by other storytellers than you. Current storytellers: {onlineStorytellersString}", ephemeral=True)
                     return
                 
-                await interaction.response.send_message(f"{interaction.user.mention} is now storyteller", ephemeral=False)
-                await interaction.user.add_roles(currentStorytellers)
+                await ctx.send(f"{ctx.author.mention} is now storyteller", ephemeral=False)
+                await ctx.author.add_roles(currentStorytellers)
 
             else:
-                await interaction.response.send_message(f"{interaction.user.mention} is no longer storyteller", ephemeral=False)
-                await interaction.user.remove_roles(currentStorytellers)
+                await ctx.send(f"{ctx.author.mention} is no longer storyteller", ephemeral=False)
+                await ctx.author.remove_roles(currentStorytellers)
 
         else:
             if gameState == 1 and storytellerRole is None and len(onlineStorytellers) > 0:
-                await interaction.response.send_message(f"You can't assign or remove {member.mention} as storyteller while the game is running by other storytellers than you. Current storytellers: {onlineStorytellersString}", ephemeral=True)
+                await ctx.send(f"You can't assign or remove {member.mention} as storyteller while the game is running by other storytellers than you. Current storytellers: {onlineStorytellersString}", ephemeral=True)
                 return
 
             if member.get_role(storyteller) is None:
-                await interaction.response.send_message(f"{member.mention} is now storyteller", ephemeral=False)
+                await ctx.send(f"{member.mention} is now storyteller", ephemeral=False)
                 await member.add_roles(currentStorytellers)
             else:
-                await interaction.response.send_message(f"{member.mention} is no longer storyteller", ephemeral=False)
+                await ctx.send(f"{member.mention} is no longer storyteller", ephemeral=False)
                 await member.remove_roles(currentStorytellers)
         pass
 
-    @app_commands.command()
+    @commands.hybrid_command()
     @app_commands.guild_only()
-    async def start(self, interaction: discord.Interaction):
+    async def start(self, ctx: commands.Context,):
         """Start the game of Blood on the Clocktower and locking storytellers"""
 
-        storyteller = await self.config.guild(interaction.guild).storyteller()
-        storytellerRole = interaction.user.get_role(storyteller)
+        storyteller = await self.config.guild(ctx.guild).storyteller()
+        storytellerRole = ctx.author.get_role(storyteller)
 
         if storytellerRole is None:
-            await interaction.response.send_message(f"You can't start the game. You are not a storyteller!", ephemeral=True)
+            await ctx.send(f"You can't start the game. You are not a storyteller!", ephemeral=True)
             return
         
-        gameState = await self.config.guild(interaction.guild).gameState()
+        gameState = await self.config.guild(ctx.guild).gameState()
         if gameState is None:
             gameState = 0
 
         if gameState == 1:
-            await interaction.response.send_message(f"The game is already started.", ephemeral=True)
+            await ctx.send(f"The game is already started.", ephemeral=True)
             return
         
-        currentStorytellers = interaction.guild.get_role(storyteller)
+        currentStorytellers = ctx.guild.get_role(storyteller)
         
         # Fetch the current storytellers offline
         onlineStorytellers = []
@@ -378,8 +438,8 @@ class BotCCog(commands.Cog):
 
         onlineStorytellersString = ", ".join(onlineStorytellers)
         
-        await self.config.guild(interaction.guild).gameState.set(1)
-        await interaction.response.send_message(f"You started the game of Blood on the Clocktower. No new storytellers can assign themselves. Please stop the game when you are done using /stop! Currently storytelling are: {onlineStorytellersString}. If you are not supposed to be a storyteller please use /storyteller to remove this role for yourself!", ephemeral=False)
+        await self.config.guild(ctx.guild).gameState.set(1)
+        await ctx.send(f"You started the game of Blood on the Clocktower. No new storytellers can assign themselves. Please stop the game when you are done using /stop! Currently storytelling are: {onlineStorytellersString}. If you are not supposed to be a storyteller please use /storyteller to remove this role for yourself!", ephemeral=False)
 
         # Fetch the current storytellers offline
         offlineStorytellers = []
@@ -390,30 +450,30 @@ class BotCCog(commands.Cog):
 
         if len(offlineStorytellers) > 0:
             offlineStorytellersString = ", ".join(offlineStorytellers)
-            await interaction.channel.send(f"Removed {offlineStorytellersString} as storytellers as they are not online")
+            await ctx.send(f"Removed {offlineStorytellersString} as storytellers as they are not online")
         
-    @app_commands.command()
+    @commands.hybrid_command()
     @app_commands.guild_only()
-    async def stop(self, interaction: discord.Interaction):
+    async def stop(self, ctx: commands.Context):
         """Stop the game of Blood on the Clocktower and removing all storytellers"""
 
-        storyteller = await self.config.guild(interaction.guild).storyteller()
-        storytellerRole = interaction.user.get_role(storyteller)
+        storyteller = await self.config.guild(ctx.guild).storyteller()
+        storytellerRole = ctx.author.get_role(storyteller)
 
         if storytellerRole is None:
-            await interaction.response.send_message(f"You can't stop the game. You are not a storyteller!", ephemeral=True)
+            await ctx.send(f"You can't stop the game. You are not a storyteller!", ephemeral=True)
             return
         
-        gameState = await self.config.guild(interaction.guild).gameState()
+        gameState = await self.config.guild(ctx.guild).gameState()
 
         if gameState is None:
             gameState = 0
 
         if gameState == 0:
-            await interaction.response.send_message(f"The game not started.", ephemeral=True)
+            await ctx.send(f"The game not started.", ephemeral=True)
             return
         
-        currentStorytellers = interaction.guild.get_role(storyteller)
+        currentStorytellers = ctx.guild.get_role(storyteller)
         storytellers = []
         for s in currentStorytellers.members:
             storytellers.append(s.mention)
@@ -421,8 +481,8 @@ class BotCCog(commands.Cog):
 
         storytellersString = ", ".join(storytellers)
 
-        await self.config.guild(interaction.guild).gameState.set(0)
-        await interaction.response.send_message(f"Blood on the Clocktower game has stopped. Thanks for running. Removed {storytellersString} as storyteller(s)", ephemeral=False)
+        await self.config.guild(ctx.guild).gameState.set(0)
+        await ctx.send(f"Blood on the Clocktower game has stopped. Thanks for running. Removed {storytellersString} as storyteller(s)", ephemeral=False)
 
 
     @botc.command(name="clean")
