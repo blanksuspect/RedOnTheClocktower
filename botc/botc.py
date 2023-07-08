@@ -12,7 +12,7 @@ log = logging.getLogger("red.botc.botc")
 class BotCCog(commands.Cog):
     """Adding commands to run a game of Blood on the Clocktower"""
 
-    __version__ = "0.0.1"
+    __version__ = "0.0.2"
     __author__ = "Burnacid"
 
     def __init__(self, bot):
@@ -172,20 +172,30 @@ class BotCCog(commands.Cog):
     @config.command(name="daychannels")
     @commands.guild_only()
     @commands.admin()
-    async def botc_config_daychannels(self, ctx: commands.Context, channel: discord.CategoryChannel):
+    async def config_daychannels(self, ctx: commands.Context, *, category_id: int) -> None:
         """Mark category as day channels"""
+
+        dayCategoryChannel = ctx.guild.get_channel(category_id)
+        if dayCategoryChannel is None:
+            await ctx.send(f"I could not find the category!", ephemeral=True)
+            return
         
-        await self.config.guild(ctx.guild).daycategory.set(channel.id)
-        await ctx.send(f"{channel.mention} is set as day channel category", delete_after=60)
+        await self.config.guild(ctx.guild).daycategory.set(dayCategoryChannel.id)
+        await ctx.send(f"{dayCategoryChannel.mention} is set as day channel category", delete_after=60)
 
     @config.command(name="nightchannels")
     @commands.guild_only()
     @commands.admin()
-    async def botc_config_daychannels(self, ctx: commands.Context, channel: discord.CategoryChannel):
-        """Mark category as day channels"""
+    async def config_nightchannels(self, ctx: commands.Context, category_id: int):
+        """Mark category as night channels"""
+
+        nightCategoryChannel = ctx.guild.get_channel(category_id)
+        if nightCategoryChannel is None:
+            await ctx.send(f"I could not find the category!", ephemeral=True)
+            return
         
-        await self.config.guild(ctx.guild).nightcategory.set(channel.id)
-        await ctx.send(f"{channel.mention} is set as night channel category", delete_after=60)
+        await self.config.guild(ctx.guild).nightcategory.set(nightCategoryChannel.id)
+        await ctx.send(f"{nightCategoryChannel.mention} is set as night channel category", delete_after=60)
 
     @commands.hybrid_command()
     @app_commands.guild_only()
