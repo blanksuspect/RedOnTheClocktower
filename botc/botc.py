@@ -9,11 +9,132 @@ import asyncio
 
 log = logging.getLogger("red.botc.botc")
 
+class BotcMenu(discord.ui.View):
+    item : str = None
+    value : int = None
+    timerActive : bool = False
+
+    @discord.ui.button(label="Day Phase", style=discord.ButtonStyle.primary, row=1)
+    async def button_day(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Starting day!", ephemeral=True)
+        self.item = "Day"
+        self.stop()
+
+    @discord.ui.button(label="Night Phase", style=discord.ButtonStyle.secondary, row=1)
+    async def button_night(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Starting night!", ephemeral=True)
+        self.item = "Night"
+        self.stop()
+
+    @discord.ui.button(label="Everyone to Town Square", style=discord.ButtonStyle.success, row=2)
+    async def button_townsquare(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Moving all to town square", ephemeral=True)
+        self.item = "Town Square"
+        self.stop()
+
+    @discord.ui.button(label="Set Day Timer", style=discord.ButtonStyle.success, row=2)
+    async def button_timer(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Time for how many minutes?")
+
+        view = TimerMenu(timeout=60)
+        timerMenu = await interaction.channel.send(view=view)
+
+        await view.wait()
+        await timerMenu.delete()
+
+        self.item = "Timer"
+        self.value = view.item
+        self.stop()
+
+    @discord.ui.button(label="Stop Timer", style=discord.ButtonStyle.danger, row=2)
+    async def button_canceltimer(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Stopping timer", ephemeral=True)
+        self.item = "Stop Timer"
+        self.stop()
+
+    @discord.ui.button(label="Stop Game", style=discord.ButtonStyle.danger, row=3)
+    async def button_stop(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Stopping the game", ephemeral=True)
+        self.item = "Stop"
+        self.stop()
+
+class TimerMenu(discord.ui.View):
+    item : int = None
+
+    @discord.ui.button(label="1", style=discord.ButtonStyle.success)
+    async def button_1(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Set timer for 1 minute", ephemeral=True)
+        self.item = 1
+        self.stop()
+
+    @discord.ui.button(label="2", style=discord.ButtonStyle.success)
+    async def button_2(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Set timer for 2 minute", ephemeral=True)
+        self.item = 2
+        self.stop()
+
+    @discord.ui.button(label="3", style=discord.ButtonStyle.success)
+    async def button_3(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Set timer for 3 minute", ephemeral=True)
+        self.item = 3
+        self.stop()
+
+    @discord.ui.button(label="4", style=discord.ButtonStyle.success)
+    async def button_4(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Set timer for 4 minute", ephemeral=True)
+        self.item = 4
+        self.stop()
+
+    @discord.ui.button(label="5", style=discord.ButtonStyle.success)
+    async def button_5(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Set timer for 5 minute", ephemeral=True)
+        self.item = 5
+        self.stop()
+
+    @discord.ui.button(label="6", style=discord.ButtonStyle.success)
+    async def button_6(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Set timer for 6 minute", ephemeral=True)
+        self.item = 6
+        self.stop()
+
+    @discord.ui.button(label="7", style=discord.ButtonStyle.success)
+    async def button_7(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Set timer for 7 minute", ephemeral=True)
+        self.item = 7
+        self.stop()
+
+    @discord.ui.button(label="8", style=discord.ButtonStyle.success)
+    async def button_8(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Set timer for 8 minute", ephemeral=True)
+        self.item = 8
+        self.stop()
+
+    @discord.ui.button(label="9", style=discord.ButtonStyle.success)
+    async def button_9(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Set timer for 9 minute", ephemeral=True)
+        self.item = 9
+        self.stop()
+
+    @discord.ui.button(label="10", style=discord.ButtonStyle.success)
+    async def button_10(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Set timer for 10 minute", ephemeral=True)
+        self.item = 10
+        self.stop()
+    
+    @discord.ui.button(label="Cancel", style=discord.ButtonStyle.danger)
+    async def button_cancel(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Timer Canceled", ephemeral=True)
+        self.item = None
+        self.stop()
+
 class BotCCog(commands.Cog):
     """Adding commands to run a game of Blood on the Clocktower"""
 
     __version__ = "0.0.2"
     __author__ = "Burnacid"
+    menuMessage = None
+    timer_task = None
+    dayrunning = False
 
     def __init__(self, bot):
         self.bot = bot
@@ -36,6 +157,85 @@ class BotCCog(commands.Cog):
             return True
         return False
     
+    async def name_storyteller(self, member: discord.Member, remove: bool = False):
+        try:
+            nickname = member.nick
+            if nickname is None:
+                nickname = member.name
+
+            if remove:
+                if nickname.startswith("(ST)") == True:
+                    await member.edit(nick=f"{nickname.replace('(ST)','').strip()}")
+            else:
+                if nickname.startswith("(ST)") == False:
+                    await member.edit(nick=f"(ST) {nickname}")
+        except:
+            log.error(f"Failed to rename {nickname}")
+    
+    async def menu(self, ctx: commands.Context):
+        gameState = await self.config.guild(ctx.guild).gameState()
+        storytellerChannel = await self.storyteller_channel(ctx)
+        if gameState is None:
+            gameState = 0
+
+        if gameState == 0:
+            return
+
+        view = BotcMenu(timeout=180)
+
+        message = await storytellerChannel.send(view=view)
+        self.menuMessage = message
+
+        await view.wait()
+        await message.delete()
+
+        if view.item == "Night":
+            await self.night(ctx)
+
+        if view.item == "Day":
+            await self.day(ctx)
+
+        if view.item == "Town Square":
+            await self.townsquare(ctx)
+
+        if view.item == "Stop":
+            await self.stop(ctx)
+
+        if view.item == "Timer" and view.value is not None:
+            await self.startday(ctx,view.value)
+            
+        if view.item == "Stop Timer":
+            await self.stoptimer(ctx)
+            pass
+
+        if self.menu is None:
+            return
+
+        await self.menu(ctx=ctx)
+
+    async def townsquare_channel(self, ctx: commands.Context):
+        dayCategory = await self.config.guild(ctx.guild).daycategory()
+        dayCategoryChannel = ctx.guild.get_channel(dayCategory)
+        if dayCategoryChannel is None:
+            await ctx.send(f"I could not find the townsquare. Something must have been deleted/moved or destroyed!", ephemeral=True)
+            return
+        
+        dayChannels = dayCategoryChannel.text_channels
+        if len(dayChannels) == 1:
+            return dayChannels[0]
+        else:
+            return dayChannels[1]
+        
+    async def storyteller_channel(self, ctx: commands.Context):
+        dayCategory = await self.config.guild(ctx.guild).daycategory()
+        dayCategoryChannel = ctx.guild.get_channel(dayCategory)
+        if dayCategoryChannel is None:
+            await ctx.send(f"I could not find the storyteller channel. Something must have been deleted/moved or destroyed!", ephemeral=True)
+            return
+        
+        dayChannels = dayCategoryChannel.text_channels
+        return dayChannels[0]
+    
     async def create_storyteller_role(self, guild: discord.Guild) -> bool:
         stGroupId = await self.config.guild(guild).storyteller()
         if stGroupId is not None:
@@ -47,6 +247,32 @@ class BotCCog(commands.Cog):
         role = await guild.create_role(name="Storyteller", colour=Colour.gold(), hoist=True, mentionable=True, reason="Setup Blood on the Clocktower by Bot")
         await self.config.guild(guild).storyteller.set(role.id)
         return True
+    
+    async def timer_run(self, ctx, dayCategoryChannel: discord.CategoryChannel ,townsquareChannel: discord.TextChannel, minutes: int, automatic = 1):
+        now = datetime.now()
+        self.deadline = now + timedelta(minutes = minutes)
+        deadlineString = self.deadline.strftime('%d-%m-%Y %H:%M:%S')
+        
+        self.dayrunning = True
+
+        await ctx.send(f"Timer set to {minutes} minutes", ephemeral=True)
+
+        await townsquareChannel.send(f"The day has started. You have {minutes} minutes for private chats. (Until {deadlineString})")
+
+        await asyncio.sleep((minutes - 1) * 60)
+
+        await townsquareChannel.send(f"The day will end in 1 minute!")
+
+        await asyncio.sleep(50)
+
+        await townsquareChannel.send(f"Back to town square please! (10 seconds)")
+
+        await asyncio.sleep(10)
+
+        if automatic == 1:
+            await self.move_townsquare(ctx, dayCategoryChannel)
+        
+        self.dayrunning = False
     
     async def create_day(self, guild: discord.Guild) -> bool:
         with open('/data/cogs/CogManager/cogs/botc/townlayout.json') as f:
@@ -68,12 +294,22 @@ class BotCCog(commands.Cog):
         overwrites = {
             storytellerRole: discord.PermissionOverwrite(view_channel=True, move_members=True, mute_members=True)
         }
+
+        overwritesSTChat = {
+            guild.default_role: discord.PermissionOverwrite(view_channel=False),
+            storytellerRole: discord.PermissionOverwrite(view_channel=True, move_members=True, mute_members=True)
+        }
         
         dayCategoryChannel = await guild.create_category_channel(name="🌞 Day BOTC",overwrites=overwrites)
         await self.config.guild(guild).daycategory.set(dayCategoryChannel.id)
 
+        firstTextChannel = True
         for t in j['DAY']['TextChannels']:
-            await dayCategoryChannel.create_text_channel(t)
+            if firstTextChannel == True:
+                await dayCategoryChannel.create_text_channel(name=t, overwrites=overwritesSTChat)
+                firstTextChannel = False
+            else:
+                await dayCategoryChannel.create_text_channel(t)
 
         for v in j['DAY']['VoiceChannels']:
             log.info(v)
@@ -111,6 +347,7 @@ class BotCCog(commands.Cog):
     async def move_townsquare(self, ctx: commands.Context, dayCategoryChannel: discord.CategoryChannel):
         dayChannels = dayCategoryChannel.voice_channels
         townSquareChannels = dayChannels[0]
+        townSquareChannel = await self.townsquare_channel(ctx)
         del dayChannels[0]
 
         for v in dayChannels:
@@ -121,7 +358,7 @@ class BotCCog(commands.Cog):
                 
                 await m.move_to(townSquareChannels)
         
-        await ctx.send(f"Welcome back!")
+        await townSquareChannel.send(f"Welcome back!")
 
     @commands.group(name="botc")
     @commands.guild_only()
@@ -233,8 +470,8 @@ class BotCCog(commands.Cog):
                     continue
 
                 #Skip storytellers
-                if m.get_role(storyteller) is not None:
-                    continue
+                # if m.get_role(storyteller) is not None:
+                #     continue
                 
                 await m.move_to(nightCottages[cottageIndex])
                 cottageIndex += 1
@@ -314,6 +551,7 @@ class BotCCog(commands.Cog):
         """Start the day for private chats with x minutes. By default pulling everyone back to town square"""
 
         minutes = int(minutes)
+        townsquareChannel = await self.townsquare_channel(ctx)
 
         storyteller = await self.config.guild(ctx.guild).storyteller()
         storytellerRole = ctx.author.get_role(storyteller)
@@ -334,32 +572,12 @@ class BotCCog(commands.Cog):
             await ctx.send(f"I could not find the night cottages. Something must have been deleted/moved or destroyed!", ephemeral=True)
             return
 
-        if self.dayrunning:
+        if self.dayrunning == True:
             deadlineString = self.deadline.strftime('%d-%m-%Y %H:%M:%S')
             await ctx.send(f"The day has already started and will end at {deadlineString}", ephemeral=True)
             return
 
-        now = datetime.now()
-        self.deadline = now + timedelta(minutes = minutes)
-        deadlineString = self.deadline.strftime('%d-%m-%Y %H:%M:%S')
-        self.dayrunning = True
-
-        await ctx.send(f"The day has started. You have {minutes} minutes for private chats. (Until {deadlineString})", ephemeral=False)
-
-        await asyncio.sleep((minutes - 1) * 60)
-
-        await ctx.send(f"The day will end in 1 minute!")
-
-        await asyncio.sleep(50)
-
-        await ctx.send(f"Back to town square please! (10 seconds)")
-
-        await asyncio.sleep(10)
-
-        if automatic == 1:
-            await self.move_townsquare(ctx, dayCategoryChannel)
-        
-        self.dayrunning = False
+        self.timer_task = asyncio.create_task(self.timer_run(ctx, dayCategoryChannel, townsquareChannel, minutes, automatic))
 
     @commands.hybrid_command()
     @app_commands.guild_only()
@@ -398,10 +616,14 @@ class BotCCog(commands.Cog):
                     await ctx.send(f"You can't assign yourself as storyteller while the game is running by other storytellers than you. Current storytellers: {onlineStorytellersString}", ephemeral=True)
                     return
                 
+                await self.name_storyteller(member=ctx.author)
+                
                 await ctx.send(f"{ctx.author.mention} is now storyteller", ephemeral=False)
                 await ctx.author.add_roles(currentStorytellers)
 
             else:
+                await self.name_storyteller(member=ctx.author,remove=True)
+
                 await ctx.send(f"{ctx.author.mention} is no longer storyteller", ephemeral=False)
                 await ctx.author.remove_roles(currentStorytellers)
 
@@ -411,9 +633,13 @@ class BotCCog(commands.Cog):
                 return
 
             if member.get_role(storyteller) is None:
+                await self.name_storyteller(member=member)
+
                 await ctx.send(f"{member.mention} is now storyteller", ephemeral=False)
                 await member.add_roles(currentStorytellers)
             else:
+                await self.name_storyteller(member=member, remove=True)
+
                 await ctx.send(f"{member.mention} is no longer storyteller", ephemeral=False)
                 await member.remove_roles(currentStorytellers)
         pass
@@ -461,7 +687,30 @@ class BotCCog(commands.Cog):
         if len(offlineStorytellers) > 0:
             offlineStorytellersString = ", ".join(offlineStorytellers)
             await ctx.send(f"Removed {offlineStorytellersString} as storytellers as they are not online")
+
+        await self.menu(ctx)
         
+    @commands.hybrid_command()
+    @app_commands.guild_only()
+    async def botcmenu(self, ctx: commands.Context):
+        await self.menu(ctx=ctx)
+
+    @commands.hybrid_command()
+    @app_commands.guild_only()
+    async def stoptimer(self, ctx: commands.Context):
+        if self.timer_task is None or self.timer_task.done() == True or self.timer_task.cancelled() == True:
+            await ctx.send(f"There is no active timer running!", ephemeral=False)
+            return
+        
+        townsquareChannel = await self.townsquare_channel(ctx)
+
+        self.dayrunning = False
+        self.timer_task.cancel()
+        
+        await ctx.send(f"Timer canceled!", ephemeral=False)
+        await townsquareChannel.send(f"Timer has been stopped!")
+
+
     @commands.hybrid_command()
     @app_commands.guild_only()
     async def stop(self, ctx: commands.Context):
@@ -488,6 +737,7 @@ class BotCCog(commands.Cog):
         for s in currentStorytellers.members:
             storytellers.append(s.mention)
             await s.remove_roles(currentStorytellers)
+            await self.name_storyteller(s, True)
 
         storytellersString = ", ".join(storytellers)
 

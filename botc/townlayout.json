@@ -1,6 +1,7 @@
 {
     "DAY":{
         "TextChannels":[
+            "storyteller-chat",
             "game-chat"
         ],
         "VoiceChannels":[
