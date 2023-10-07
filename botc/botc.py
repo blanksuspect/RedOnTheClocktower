@@ -44,18 +44,18 @@ class BotcMenu(discord.ui.View):
 
         self.item = "Timer"
         self.value = view.item
-        self.stop()
+        self.()
 
-    @discord.ui.button(label="Stop Timer", style=discord.ButtonStyle.danger, row=2)
+    @discord.ui.button(label=" Timer", style=discord.ButtonStyle.danger, row=2)
     async def button_canceltimer(self, interaction: discord.Interaction, button: discord.ui.button):
-        await interaction.response.send_message("Stopping timer", ephemeral=True)
-        self.item = "Stop Timer"
-        self.stop()
+        await interaction.response.send_message("ping timer", ephemeral=True)
+        self.item = " Timer"
+        self.()
 
-    @discord.ui.button(label="Stop Game", style=discord.ButtonStyle.danger, row=3)
-    async def button_stop(self, interaction: discord.Interaction, button: discord.ui.button):
-        await interaction.response.send_message("Stopping the game", ephemeral=True)
-        self.item = "Stop"
+    @discord.ui.button(label="End Game", style=discord.ButtonStyle.danger, row=3)
+    async def button_end(self, interaction: discord.Interaction, button: discord.ui.button):
+        await interaction.response.send_message("Ending the game", ephemeral=True)
+        self.item = "End"
         self.stop()
 
 class TimerMenu(discord.ui.View):
@@ -198,7 +198,7 @@ class BotCCog(commands.Cog):
         if view.item == "Town Square":
             await self.townsquare(ctx)
 
-        if view.item == "Stop":
+        if view.item == "End":
             await self.stop(ctx)
 
         if view.item == "Timer" and view.value is not None:
@@ -675,7 +675,7 @@ class BotCCog(commands.Cog):
         onlineStorytellersString = ", ".join(onlineStorytellers)
         
         await self.config.guild(ctx.guild).gameState.set(1)
-        await ctx.send(f"You started the game of Blood on the Clocktower. No new storytellers can assign themselves. Please stop the game when you are done using /stop! Currently storytelling are: {onlineStorytellersString}. If you are not supposed to be a storyteller please use /storyteller to remove this role for yourself!", ephemeral=False)
+        await ctx.send(f"You started the game of Blood on the Clocktower. No new storytellers can assign themselves. Please end the game when you are done using /end! Currently storytelling are: {onlineStorytellersString}. If you are not supposed to be a storyteller please use /storyteller to remove this role for yourself!", ephemeral=False)
 
         # Fetch the current storytellers offline
         offlineStorytellers = []
@@ -713,14 +713,14 @@ class BotCCog(commands.Cog):
 
     @commands.hybrid_command()
     @app_commands.guild_only()
-    async def stop(self, ctx: commands.Context):
-        """Stop the game of Blood on the Clocktower and removing all storytellers"""
+    async def end(self, ctx: commands.Context):
+        """End the game of Blood on the Clocktower and removing all storytellers"""
 
         storyteller = await self.config.guild(ctx.guild).storyteller()
         storytellerRole = ctx.author.get_role(storyteller)
 
         if storytellerRole is None:
-            await ctx.send(f"You can't stop the game. You are not a storyteller!", ephemeral=True)
+            await ctx.send(f"You can't end the game. You are not a storyteller!", ephemeral=True)
             return
         
         gameState = await self.config.guild(ctx.guild).gameState()
@@ -742,7 +742,7 @@ class BotCCog(commands.Cog):
         storytellersString = ", ".join(storytellers)
 
         await self.config.guild(ctx.guild).gameState.set(0)
-        await ctx.send(f"Blood on the Clocktower game has stopped. Thanks for running. Removed {storytellersString} as storyteller(s)", ephemeral=False)
+        await ctx.send(f"Blood on the Clocktower game has ended. Thanks for running. Removed {storytellersString} as storyteller(s)", ephemeral=False)
 
 
     @botc.command(name="clean")
