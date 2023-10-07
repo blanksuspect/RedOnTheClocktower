@@ -44,13 +44,13 @@ class BotcMenu(discord.ui.View):
 
         self.item = "Timer"
         self.value = view.item
-        self.()
+        self.stop()
 
-    @discord.ui.button(label=" Timer", style=discord.ButtonStyle.danger, row=2)
+    @discord.ui.button(label="Stop Timer", style=discord.ButtonStyle.danger, row=2)
     async def button_canceltimer(self, interaction: discord.Interaction, button: discord.ui.button):
         await interaction.response.send_message("ping timer", ephemeral=True)
-        self.item = " Timer"
-        self.()
+        self.item = "Stop Timer"
+        self.stop()
 
     @discord.ui.button(label="End Game", style=discord.ButtonStyle.danger, row=3)
     async def button_end(self, interaction: discord.Interaction, button: discord.ui.button):
