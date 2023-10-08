@@ -300,7 +300,7 @@ class BotCCog(commands.Cog):
             storytellerRole: discord.PermissionOverwrite(view_channel=True, move_members=True, mute_members=True)
         }
         
-        dayCategoryChannel = await guild.create_category_channel(name="🌞 Day BOTC",overwrites=overwrites)
+        dayCategoryChannel = await guild.create_category_channel(name="ravenswood bluff - day",overwrites=overwrites)
         await self.config.guild(guild).daycategory.set(dayCategoryChannel.id)
 
         firstTextChannel = True
@@ -337,7 +337,7 @@ class BotCCog(commands.Cog):
             storytellerRole: discord.PermissionOverwrite(view_channel=True, move_members=True, mute_members=True)
         }
         
-        nightCategoryChannel = await guild.create_category_channel(name="🌙 Night BOTC ✨",overwrites=overwrites)
+        nightCategoryChannel = await guild.create_category_channel(name="ravenswood bluff - night",overwrites=overwrites)
         await self.config.guild(guild).nightcategory.set(nightCategoryChannel.id)
 
         for v in j['NIGHT']['VoiceChannels']:
