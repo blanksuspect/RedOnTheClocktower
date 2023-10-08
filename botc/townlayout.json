@@ -1,46 +1,45 @@
 {
     "DAY":{
         "TextChannels":[
-            "storyteller-chat",
-            "game-chat"
+            "storyteller",
+            "chat"
         ],
         "VoiceChannels":[
-            "⛲ Town Square",
-            "🍻 Inn",
-            "🏫 School",
-            "⛪ Church",
-            "🔱 Devil's Lair",
-            "🌳 Forbidden Forest",
-            "🏰 Lost Castle",
-            "🗡 Village Smithy",
-            "🕍 Sacred Temple",
-            "💀 Haunted Cemetery",
-            "📖 Storyteller's Consultation"
+            "town square",
+            "inn",
+            "library",
+            "blacksmith",
+            "back alley",
+            "forest",
+            "riverside",
+            "clocktower basement",
+            "church",
+            "cemetery",
+            "storyteller's sanctuary"
         ]
     },
     "NIGHT":{
         "VoiceChannels":[
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage",
-            "🛌 Cottage"
+            "cottage",
+            "cottage",
+            "cottage",
+            "cottage",
+            "cottage",
+            "cottage",
+            "cottage",
+            "cottage",
+            "cottage",
+            "cottage",
+            "cottage",
+            "cottage",
+            "cottage",
+            "cottage",
+            "cottage",
+            "cottage",
+            "cottage",
+            "cottage",
+            "cottage",
+            "cottage"
         ]
     }
 }
