@@ -4,6 +4,7 @@ import json
 from discord import Colour
 from redbot.core import Config, commands
 from redbot.core import commands, app_commands
+from redbot.core.data_manager import bundled_data_path
 from datetime import datetime, timedelta
 import asyncio
 
@@ -275,7 +276,8 @@ class BotCCog(commands.Cog):
         self.dayrunning = False
     
     async def create_day(self, guild: discord.Guild) -> bool:
-        with open('/data/cogs/CogManager/cogs/botc/townlayout.json') as f:
+        path = bundled_data_path / "townlayout.json"
+        with path.open("r") as f:
             j = json.load(f)
 
         dayCategory = await self.config.guild(guild).daycategory()
@@ -316,7 +318,8 @@ class BotCCog(commands.Cog):
             await dayCategoryChannel.create_voice_channel(v)
 
     async def create_night(self, guild: discord.Guild) -> bool:
-        with open('/data/cogs/CogManager/cogs/botc/townlayout.json') as f:
+        path = bundled_data_path / "townlayout.json"
+        with path.open("r") as f:
             j = json.load(f)
 
         nightCategory = await self.config.guild(guild).nightcategory()
