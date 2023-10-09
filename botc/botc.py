@@ -307,7 +307,7 @@ class BotCCog(commands.Cog):
 
         firstTextChannel = True
         for t in j['DAY']['TextChannels']:
-            log.debug(t)
+            log.info(t)
             if firstTextChannel == True:
                 await dayCategoryChannel.create_text_channel(name=t, overwrites=overwritesSTChat)
                 firstTextChannel = False
@@ -315,7 +315,7 @@ class BotCCog(commands.Cog):
                 await dayCategoryChannel.create_text_channel(t)
 
         for v in j['DAY']['VoiceChannels']:
-            log.debug(v)
+            log.info(v)
             await dayCategoryChannel.create_voice_channel(v)
 
     async def create_night(self, guild: discord.Guild) -> bool:
@@ -345,7 +345,7 @@ class BotCCog(commands.Cog):
         await self.config.guild(guild).nightcategory.set(nightCategoryChannel.id)
 
         for v in j['NIGHT']['VoiceChannels']:
-            log.debug(v)
+            log.info(v)
             await nightCategoryChannel.create_voice_channel(v)        
 
     async def move_townsquare(self, ctx: commands.Context, dayCategoryChannel: discord.CategoryChannel):
