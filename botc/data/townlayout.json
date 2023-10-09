@@ -1,45 +1,41 @@
 {
-  "DAY": {
-    "TextChannels": [
-      "storyteller",
-      "chat"
-    ],
-    "VoiceChannels": [
-      "town square",
-      "inn",
-      "library",
-      "blacksmith",
-      "back alley",
-      "forest",
-      "riverside",
-      "clocktower basement",
-      "church",
-      "cemetery",
-      "storyteller's sanctuary"
-    ]
-  },
-  "NIGHT": {
-    "VoiceChannels": [
-      "cottage",
-      "cottage",
-      "cottage",
-      "cottage",
-      "cottage",
-      "cottage",
-      "cottage",
-      "cottage",
-      "cottage",
-      "cottage",
-      "cottage",
-      "cottage",
-      "cottage",
-      "cottage",
-      "cottage",
-      "cottage",
-      "cottage",
-      "cottage",
-      "cottage",
-      "cottage"
-    ]
-  }
+  "DayText": [
+    "storyteller",
+    "chat"
+  ],
+  "DayVoice": [
+    "town square",
+    "inn",
+    "library",
+    "blacksmith",
+    "back alley",
+    "forest",
+    "riverside",
+    "clocktower basement",
+    "church",
+    "cemetery",
+    "storyteller's sanctuary"
+  ],
+  "NightVoice": [
+    "cottage",
+    "cottage",
+    "cottage",
+    "cottage",
+    "cottage",
+    "cottage",
+    "cottage",
+    "cottage",
+    "cottage",
+    "cottage",
+    "cottage",
+    "cottage",
+    "cottage",
+    "cottage",
+    "cottage",
+    "cottage",
+    "cottage",
+    "cottage",
+    "cottage",
+    "cottage"
+  ]
 }
