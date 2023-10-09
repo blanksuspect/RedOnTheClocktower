@@ -306,7 +306,7 @@ class BotCCog(commands.Cog):
         await self.config.guild(guild).daycategory.set(dayCategoryChannel.id)
 
         firstTextChannel = True
-        for t in j['DAY']['TextChannels']:
+        for t in j['DayText']:
             log.info(t)
             if firstTextChannel == True:
                 await dayCategoryChannel.create_text_channel(name=t, overwrites=overwritesSTChat)
@@ -314,7 +314,7 @@ class BotCCog(commands.Cog):
             else:
                 await dayCategoryChannel.create_text_channel(t)
 
-        for v in j['DAY']['VoiceChannels']:
+        for v in j['DayVoice']:
             log.info(v)
             await dayCategoryChannel.create_voice_channel(v)
 
@@ -344,7 +344,7 @@ class BotCCog(commands.Cog):
         nightCategoryChannel = await guild.create_category_channel(name="ravenswood bluff - night",overwrites=overwrites)
         await self.config.guild(guild).nightcategory.set(nightCategoryChannel.id)
 
-        for v in j['NIGHT']['VoiceChannels']:
+        for v in j['NightVoice']:
             log.info(v)
             await nightCategoryChannel.create_voice_channel(v)        
 
