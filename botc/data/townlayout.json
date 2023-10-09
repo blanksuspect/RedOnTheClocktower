@@ -1,6 +1,7 @@
 {
   "DayText": [
     "storyteller",
+    "information",
     "chat"
   ],
   "DayVoice": [
@@ -17,25 +18,6 @@
     "storyteller's sanctuary"
   ],
   "NightVoice": [
-    "cottage",
-    "cottage",
-    "cottage",
-    "cottage",
-    "cottage",
-    "cottage",
-    "cottage",
-    "cottage",
-    "cottage",
-    "cottage",
-    "cottage",
-    "cottage",
-    "cottage",
-    "cottage",
-    "cottage",
-    "cottage",
-    "cottage",
-    "cottage",
-    "cottage",
     "cottage"
   ]
 }
