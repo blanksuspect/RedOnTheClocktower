@@ -307,7 +307,7 @@ class BotCCog(commands.Cog):
 
         firstTextChannel = True
         for t in j['DAY']['TextChannels']:
-            lot.info(t)
+            log.info(t)
             if firstTextChannel == True:
                 await dayCategoryChannel.create_text_channel(name=t, overwrites=overwritesSTChat)
                 firstTextChannel = False
