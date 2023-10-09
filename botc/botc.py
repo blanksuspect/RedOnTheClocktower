@@ -276,7 +276,7 @@ class BotCCog(commands.Cog):
         self.dayrunning = False
     
     async def create_day(self, guild: discord.Guild) -> bool:
-        path = bundled_data_path(self) / "townlayout.json"
+        path = bundled_data_path / "townlayout.json"
         with path.open("r") as f:
             j = json.load(f)
 
@@ -319,7 +319,7 @@ class BotCCog(commands.Cog):
             await dayCategoryChannel.create_voice_channel(v)
 
     async def create_night(self, guild: discord.Guild) -> bool:
-        path = bundled_data_path(self) / "townlayout.json"
+        path = bundled_data_path / "townlayout.json"
         with path.open("r") as f:
             j = json.load(f)
 
