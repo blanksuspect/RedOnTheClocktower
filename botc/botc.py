@@ -200,7 +200,7 @@ class BotCCog(commands.Cog):
             await self.townsquare(ctx)
 
         if view.item == "End":
-            await self.stop(ctx)
+            await self.end(ctx)
 
         if view.item == "Timer" and view.value is not None:
             await self.startday(ctx,view.value)
