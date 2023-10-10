@@ -225,7 +225,7 @@ class BotCCog(commands.Cog):
         if len(dayChannels) == 1:
             return dayChannels[0]
         else:
-            return dayChannels[1]
+            return dayChannels[len(dayChannels)-1]
         
     async def storyteller_channel(self, ctx: commands.Context):
         dayCategory = await self.config.guild(ctx.guild).daycategory()
