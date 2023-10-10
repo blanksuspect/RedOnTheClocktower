@@ -19,19 +19,19 @@ class BotcMenu(discord.ui.View):
     async def button_day(self, interaction: discord.Interaction, button: discord.ui.button):
         await interaction.response.send_message("Starting day!", ephemeral=True)
         self.item = "Day"
-        self.stop()
+        self.end()
 
     @discord.ui.button(label="Night Phase", style=discord.ButtonStyle.secondary, row=1)
     async def button_night(self, interaction: discord.Interaction, button: discord.ui.button):
         await interaction.response.send_message("Starting night!", ephemeral=True)
         self.item = "Night"
-        self.stop()
+        self.end()
 
     @discord.ui.button(label="Everyone to Town Square", style=discord.ButtonStyle.success, row=2)
     async def button_townsquare(self, interaction: discord.Interaction, button: discord.ui.button):
         await interaction.response.send_message("Moving all to town square", ephemeral=True)
         self.item = "Town Square"
-        self.stop()
+        self.end()
 
     @discord.ui.button(label="Set Day Timer", style=discord.ButtonStyle.success, row=2)
     async def button_timer(self, interaction: discord.Interaction, button: discord.ui.button):
@@ -45,19 +45,19 @@ class BotcMenu(discord.ui.View):
 
         self.item = "Timer"
         self.value = view.item
-        self.stop()
+        self.end()
 
     @discord.ui.button(label="Stop Timer", style=discord.ButtonStyle.danger, row=2)
     async def button_canceltimer(self, interaction: discord.Interaction, button: discord.ui.button):
         await interaction.response.send_message("ping timer", ephemeral=True)
         self.item = "Stop Timer"
-        self.stop()
+        self.end()
 
     @discord.ui.button(label="End Game", style=discord.ButtonStyle.danger, row=3)
     async def button_end(self, interaction: discord.Interaction, button: discord.ui.button):
         await interaction.response.send_message("Ending the game", ephemeral=True)
         self.item = "End"
-        self.stop()
+        self.end()
 
 class TimerMenu(discord.ui.View):
     item : int = None
@@ -66,67 +66,67 @@ class TimerMenu(discord.ui.View):
     async def button_1(self, interaction: discord.Interaction, button: discord.ui.button):
         await interaction.response.send_message("Set timer for 1 minute", ephemeral=True)
         self.item = 1
-        self.stop()
+        self.end()
 
     @discord.ui.button(label="2", style=discord.ButtonStyle.success)
     async def button_2(self, interaction: discord.Interaction, button: discord.ui.button):
         await interaction.response.send_message("Set timer for 2 minute", ephemeral=True)
         self.item = 2
-        self.stop()
+        self.end()
 
     @discord.ui.button(label="3", style=discord.ButtonStyle.success)
     async def button_3(self, interaction: discord.Interaction, button: discord.ui.button):
         await interaction.response.send_message("Set timer for 3 minute", ephemeral=True)
         self.item = 3
-        self.stop()
+        self.end()
 
     @discord.ui.button(label="4", style=discord.ButtonStyle.success)
     async def button_4(self, interaction: discord.Interaction, button: discord.ui.button):
         await interaction.response.send_message("Set timer for 4 minute", ephemeral=True)
         self.item = 4
-        self.stop()
+        self.end()
 
     @discord.ui.button(label="5", style=discord.ButtonStyle.success)
     async def button_5(self, interaction: discord.Interaction, button: discord.ui.button):
         await interaction.response.send_message("Set timer for 5 minute", ephemeral=True)
         self.item = 5
-        self.stop()
+        self.end()
 
     @discord.ui.button(label="6", style=discord.ButtonStyle.success)
     async def button_6(self, interaction: discord.Interaction, button: discord.ui.button):
         await interaction.response.send_message("Set timer for 6 minute", ephemeral=True)
         self.item = 6
-        self.stop()
+        self.end()
 
     @discord.ui.button(label="7", style=discord.ButtonStyle.success)
     async def button_7(self, interaction: discord.Interaction, button: discord.ui.button):
         await interaction.response.send_message("Set timer for 7 minute", ephemeral=True)
         self.item = 7
-        self.stop()
+        self.end()
 
     @discord.ui.button(label="8", style=discord.ButtonStyle.success)
     async def button_8(self, interaction: discord.Interaction, button: discord.ui.button):
         await interaction.response.send_message("Set timer for 8 minute", ephemeral=True)
         self.item = 8
-        self.stop()
+        self.end()
 
     @discord.ui.button(label="9", style=discord.ButtonStyle.success)
     async def button_9(self, interaction: discord.Interaction, button: discord.ui.button):
         await interaction.response.send_message("Set timer for 9 minute", ephemeral=True)
         self.item = 9
-        self.stop()
+        self.end()
 
     @discord.ui.button(label="10", style=discord.ButtonStyle.success)
     async def button_10(self, interaction: discord.Interaction, button: discord.ui.button):
         await interaction.response.send_message("Set timer for 10 minute", ephemeral=True)
         self.item = 10
-        self.stop()
+        self.end()
     
     @discord.ui.button(label="Cancel", style=discord.ButtonStyle.danger)
     async def button_cancel(self, interaction: discord.Interaction, button: discord.ui.button):
         await interaction.response.send_message("Timer Canceled", ephemeral=True)
         self.item = None
-        self.stop()
+        self.end()
 
 class BotCCog(commands.Cog):
     """Adding commands to run a game of Blood on the Clocktower"""
